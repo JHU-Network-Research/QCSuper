@@ -67,6 +67,9 @@ local NR_RRC_LOG_TYPES = {
     [0x18] = 'Radio Bearer Configuration',
     [0x19] = 'Radio Bearer Configuration',
     [0x1a] = 'Radio Bearer Configuration',
+    -- Seen on v25: matches the nr-RadioBearerConfig1-r15 of the preceding
+    -- LTE RRCConnectionReconfiguration (EN-DC), logged with no NR serving cell.
+    [0x1d] = 'Radio Bearer Configuration',
     [0x1e] = 'UE Capability (NR)',
     [0x1f] = 'UE Capability (MRDC)',
     -- Internal/cached containers seen on v17 (NOT over-the-air; routed to "data").
@@ -93,6 +96,7 @@ local NR_RRC_LOG_DISSECTORS = {
     [0x18] = 'nr-rrc.radiobearerconfig',
     [0x19] = 'nr-rrc.radiobearerconfig',
     [0x1a] = 'nr-rrc.radiobearerconfig',
+    [0x1d] = 'nr-rrc.radiobearerconfig',
     [0x1e] = 'nr-rrc.ue_nr_cap',
     [0x1f] = 'nr-rrc.ue_mrdc_cap',
     -- 0x0f-0x12 intentionally absent -> handled by the "data" dissector.
