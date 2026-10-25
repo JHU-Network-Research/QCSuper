@@ -37,6 +37,7 @@ Issues = "https://github.com/P1sec/QCSuper/issues"
 
 [project.scripts]
 qcsuper = "qcsuper.main:main"
+qmdl2pcap = "qcsuper.qmdl2pcap:main"
 
 [tool.poetry]
 name = "qcsuper"
