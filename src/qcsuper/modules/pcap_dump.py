@@ -470,7 +470,7 @@ class PcapDumper(DecodedSibsDumper):
                 return
 
             packet = build_gsmtap_ip(
-                GSMTAP_TYPE_LTE_RRC, gsmtap_channel_type, packet, is_uplink
+                GSMTAP_TYPE_LTE_RRC, gsmtap_channel_type, packet, is_uplink, freq
             )
 
         elif self.decrypt_nas and log_type in (

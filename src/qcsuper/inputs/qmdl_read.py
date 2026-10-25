@@ -52,7 +52,7 @@ class QmdlReader(HdlcMixin, BaseInput):
                     log_time = (
                         (log_time >> 20) / 50
                         + TIMESTAMP_OFFSET
-                        + ((log_time & 0xFFFFF) / 0x100000)
+                        + ((log_time & 0xFFFFF) / 0x100000) / 50  # mantissa of a 20 ms unit
                     )
         
                     if TIMESTAMP_MIN <= log_time <= TIMESTAMP_MAX:

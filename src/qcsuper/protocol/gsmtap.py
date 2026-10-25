@@ -10,7 +10,7 @@ GSMTAP_PORT = 4729
 NR_RRC_UDP_PORT = 47928
 
 
-def build_gsmtap_ip(gsmtap_protocol, gsmtap_channel_type, payload, is_uplink):
+def build_gsmtap_ip(gsmtap_protocol, gsmtap_channel_type, payload, is_uplink, arfcn=0):
 
     packet = (
         pack(
@@ -18,7 +18,7 @@ def build_gsmtap_ip(gsmtap_protocol, gsmtap_channel_type, payload, is_uplink):
             2,  # GSMTAP version
             4,  # Header words
             gsmtap_protocol,
-            int(is_uplink) << 14,
+            (int(is_uplink) << 14) | (arfcn & 0x3FFF),  # Uplink flag + ARFCN
             gsmtap_channel_type,
         )
         + payload
