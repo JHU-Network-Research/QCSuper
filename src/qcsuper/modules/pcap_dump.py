@@ -188,10 +188,13 @@ class PcapDumper(DecodedSibsDumper):
             ):
                 return  # Frames containing only a MIB or extension SIB, as already present in RRC frames, ignoring
 
+            uarfcn = 0
+
             if (
                 channel_type >= 0x80
             ):  # We are in presence of an explicit ARFCN/PSC
                 channel_type -= 0x80
+                uarfcn, psc = unpack('<HH', signalling_message[:4])
                 signalling_message = signalling_message[4:]
 
             packet = signalling_message[:length]
@@ -216,7 +219,11 @@ class PcapDumper(DecodedSibsDumper):
                 return
 
             packet = build_gsmtap_ip(
-                GSMTAP_TYPE_UMTS_RRC, gsmtap_channel_type, packet, is_uplink
+                GSMTAP_TYPE_UMTS_RRC,
+                gsmtap_channel_type,
+                packet,
+                is_uplink,
+                arfcn=uarfcn,
             )
 
         elif log_type == LOG_GSM_RR_SIGNALING_MESSAGE_C:  # 0x512f
@@ -470,7 +477,13 @@ class PcapDumper(DecodedSibsDumper):
                 return
 
             packet = build_gsmtap_ip(
-                GSMTAP_TYPE_LTE_RRC, gsmtap_channel_type, packet, is_uplink, freq
+                GSMTAP_TYPE_LTE_RRC,
+                gsmtap_channel_type,
+                packet,
+                is_uplink,
+                arfcn=freq,
+                frame_number=sfn,
+                phy_cellid=phy_cellid,
             )
 
         elif self.decrypt_nas and log_type in (

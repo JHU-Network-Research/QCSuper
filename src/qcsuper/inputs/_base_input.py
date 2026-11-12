@@ -8,6 +8,7 @@ from traceback import format_exc
 from time import sleep, time
 from subprocess import run
 from shutil import which
+from sys import stdin
 from struct import pack
 
 from ..modules.cli import CommandLineInterface
@@ -144,9 +145,10 @@ class BaseInput:
 
                 # When the daemon thread holding a terminal CLI is present, an abrupt
                 # shutdown may break the state of the terminal (suppress echo). Avoid
-                # this by restoring the TTY's state.
+                # this by restoring the TTY's state (when there is one: stdin
+                # may be a pipe or a file, e.g. when run from a script).
 
-                if which('stty'):
+                if which('stty') and stdin.isatty():
                     run(['stty', 'sane'])
 
                 # Apply any further actions to clean up the Input class's

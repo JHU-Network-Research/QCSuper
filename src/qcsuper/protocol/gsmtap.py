@@ -10,17 +10,47 @@ GSMTAP_PORT = 4729
 NR_RRC_UDP_PORT = 47928
 
 
-def build_gsmtap_ip(gsmtap_protocol, gsmtap_channel_type, payload, is_uplink, arfcn=0):
+def build_gsmtap_ip(
+    gsmtap_protocol,
+    gsmtap_channel_type,
+    payload,
+    is_uplink,
+    arfcn=0,
+    frame_number=0,
+    phy_cellid=None,
+):
+
+    # The GSMTAP ARFCN field is 14 bits wide (the upper bits being the
+    # uplink and PCS flags): channel numbers that don't fit (e.g. EARFCNs
+    # above 16383) are carried in full in an extra 32-bit header word,
+    # which Wireshark skips (it locates the payload using the header length).
+    #
+    # When a physical cell ID is given, a second extra word holds it, so
+    # the extension is then always 2 words: [full ARFCN][physical cell ID]
+    # (the QCSuper Lua plug-in exposes both).
+
+    header_ext = b''
+
+    if phy_cellid is not None:
+        header_ext = pack('>II', arfcn, phy_cellid)
+        if not 0 <= arfcn <= 0x3FFF:
+            arfcn = 0
+
+    elif not 0 <= arfcn <= 0x3FFF:
+        header_ext = pack('>I', arfcn)
+        arfcn = 0
 
     packet = (
         pack(
-            '>BBBxHxx4xBxxx',
+            '>BBBxHxxIBxxx',
             2,  # GSMTAP version
-            4,  # Header words
+            4 + len(header_ext) // 4,  # Header words
             gsmtap_protocol,
-            (int(is_uplink) << 14) | (arfcn & 0x3FFF),  # Uplink flag + ARFCN
+            (int(is_uplink) << 14) | arfcn,
+            frame_number,
             gsmtap_channel_type,
         )
+        + header_ext
         + payload
     )
 
